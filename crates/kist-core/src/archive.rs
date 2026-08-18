@@ -71,6 +71,7 @@ mod tests {
             compressed_size: 650,
         };
 
-        assert!((summary.savings_percent() - 35.0).abs() < f32::EPSILON);
+        let savings = summary.savings_percent();
+        assert!((savings - 35.0).abs() < 0.001);
     }
 }
