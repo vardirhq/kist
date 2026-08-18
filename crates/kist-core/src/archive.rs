@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
-use std::{fs::File, path::{Path, PathBuf}};
+use std::{
+    fs::File,
+    path::{Path, PathBuf},
+};
 use thiserror::Error;
 use zip::ZipArchive;
 
@@ -165,8 +168,17 @@ mod tests {
 
     #[test]
     fn detects_supported_extensions() {
-        assert_eq!(detect_format(Path::new("photos.zip")).unwrap(), ArchiveFormat::Zip);
-        assert_eq!(detect_format(Path::new("backup.tar.gz")).unwrap(), ArchiveFormat::TarGz);
-        assert_eq!(detect_format(Path::new("backup.tar.zst")).unwrap(), ArchiveFormat::TarZstd);
+        assert_eq!(
+            detect_format(Path::new("photos.zip")).unwrap(),
+            ArchiveFormat::Zip
+        );
+        assert_eq!(
+            detect_format(Path::new("backup.tar.gz")).unwrap(),
+            ArchiveFormat::TarGz
+        );
+        assert_eq!(
+            detect_format(Path::new("backup.tar.zst")).unwrap(),
+            ArchiveFormat::TarZstd
+        );
     }
 }
