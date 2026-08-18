@@ -1,0 +1,12 @@
+[package]
+name = "kist-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+eframe.workspace = true
+egui.workspace = true
+kist-core = { path = "../kist-core" }
