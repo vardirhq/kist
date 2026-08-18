@@ -6,8 +6,12 @@ All notable changes to Kist will be documented in this file.
 
 ### Added
 
-- Pure Rust workspace with separate `kist-core` and `kist-app` crates.
-- Initial archive domain model and compression format definitions.
-- Initial egui/eframe desktop shell.
-- Product, architecture, and ForgeZip migration documentation.
-- CI checks for formatting, Clippy, tests, and workspace compilation.
+- A native archive-manager layout with a focused dark visual system, top toolbar, archive sidebar, breadcrumbs, and file table.
+- Native file picker and drag-and-drop archive opening.
+- Real ZIP inspection, including archive entries, original/compressed sizes, and compression savings.
+- Folder navigation inside ZIP archives.
+
+### Changed
+
+- Replaced the bootstrap placeholder screen with the first functional Kist desktop experience.
+

@@ -16,5 +16,7 @@ rust-version = "1.85"
 anyhow = "1.0"
 eframe = "0.32"
 egui = "0.32"
+rfd = "0.15"
 serde = { version = "1.0", features = ["derive"] }
 thiserror = "2.0"
+zip = { version = "4", default-features = false, features = ["deflate"] }
