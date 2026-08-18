@@ -22,17 +22,12 @@ impl ArchiveFormat {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum CompressionLevel {
     Fast,
+    #[default]
     Balanced,
     Maximum,
-}
-
-impl Default for CompressionLevel {
-    fn default() -> Self {
-        Self::Balanced
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
