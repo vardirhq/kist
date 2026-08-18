@@ -1,3 +1,6 @@
 mod archive;
 
-pub use archive::{ArchiveEntry, ArchiveFormat, ArchiveSummary, CompressionLevel};
+pub use archive::{
+    ArchiveDocument, ArchiveEntry, ArchiveError, ArchiveFormat, ArchiveSummary, CompressionLevel,
+    open_archive,
+};
