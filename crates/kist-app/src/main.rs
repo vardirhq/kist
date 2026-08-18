@@ -1,5 +1,5 @@
 use eframe::egui;
-use kist_core::{open_archive, ArchiveDocument, ArchiveEntry};
+use kist_core::{ArchiveDocument, ArchiveEntry, open_archive};
 use std::{
     collections::BTreeMap,
     path::{Path, PathBuf},
@@ -139,15 +139,14 @@ impl KistApp {
                     if ui
                         .add_sized(
                             [218.0, 36.0],
-                            egui::Button::new(
-                                egui::RichText::new("⚙   Settings").color(MUTED),
-                            )
-                            .fill(egui::Color32::TRANSPARENT)
-                            .stroke(egui::Stroke::NONE),
+                            egui::Button::new(egui::RichText::new("⚙   Settings").color(MUTED))
+                                .fill(egui::Color32::TRANSPARENT)
+                                .stroke(egui::Stroke::NONE),
                         )
                         .clicked()
                     {
-                        self.error = Some("Settings will arrive with persisted preferences.".to_owned());
+                        self.error =
+                            Some("Settings will arrive with persisted preferences.".to_owned());
                     }
                 });
             });
@@ -467,7 +466,11 @@ fn sidebar_button(ui: &mut egui::Ui, label: &str, active: bool) -> egui::Respons
     ui.add_sized(
         [218.0, 42.0],
         egui::Button::new(egui::RichText::new(label).color(TEXT))
-            .fill(if active { ACCENT_SOFT } else { egui::Color32::TRANSPARENT })
+            .fill(if active {
+                ACCENT_SOFT
+            } else {
+                egui::Color32::TRANSPARENT
+            })
             .stroke(if active {
                 egui::Stroke::new(1.0_f32, egui::Color32::from_rgb(56, 51, 92))
             } else {
@@ -482,10 +485,7 @@ fn recent_row(ui: &mut egui::Ui, path: &Path) -> egui::Response {
         .file_name()
         .and_then(|value| value.to_str())
         .unwrap_or("Archive");
-    let parent = path
-        .parent()
-        .and_then(|value| value.to_str())
-        .unwrap_or("");
+    let parent = path.parent().and_then(|value| value.to_str()).unwrap_or("");
     egui::Frame::new()
         .inner_margin(egui::Margin::symmetric(6, 6))
         .show(ui, |ui| {
@@ -532,7 +532,11 @@ fn archive_card(ui: &mut egui::Ui, document: &ArchiveDocument) {
             ui.add_space(8.0);
             ui.separator();
             ui.add_space(7.0);
-            ui.label(egui::RichText::new("✓  Archive loaded").small().color(SUCCESS));
+            ui.label(
+                egui::RichText::new("✓  Archive loaded")
+                    .small()
+                    .color(SUCCESS),
+            );
         });
 }
 
@@ -571,16 +575,14 @@ fn breadcrumbs(ui: &mut egui::Ui, archive_name: &str, current_path: &mut String)
 fn action_button(ui: &mut egui::Ui, label: &str, accent: bool) -> egui::Response {
     ui.add_sized(
         [104.0, 38.0],
-        egui::Button::new(
-            egui::RichText::new(label).color(if accent { ACCENT } else { TEXT }),
-        )
-        .fill(if accent { ACCENT_SOFT } else { PANEL_2 })
-        .stroke(if accent {
-            egui::Stroke::new(1.0_f32, egui::Color32::from_rgb(73, 65, 129))
-        } else {
-            egui::Stroke::new(1.0_f32, BORDER)
-        })
-        .corner_radius(7.0),
+        egui::Button::new(egui::RichText::new(label).color(if accent { ACCENT } else { TEXT }))
+            .fill(if accent { ACCENT_SOFT } else { PANEL_2 })
+            .stroke(if accent {
+                egui::Stroke::new(1.0_f32, egui::Color32::from_rgb(73, 65, 129))
+            } else {
+                egui::Stroke::new(1.0_f32, BORDER)
+            })
+            .corner_radius(7.0),
     )
 }
 
@@ -649,10 +651,11 @@ fn row_ui(ui: &mut egui::Ui, row: &BrowserRow) -> egui::Response {
                         .map(format_bytes)
                         .unwrap_or_else(|| "—".to_owned())
                 }));
-                columns[3].label(
-                    egui::RichText::new(ratio)
-                        .color(if row.is_directory { FAINT } else { SUCCESS }),
-                );
+                columns[3].label(egui::RichText::new(ratio).color(if row.is_directory {
+                    FAINT
+                } else {
+                    SUCCESS
+                }));
                 columns[4].label(egui::RichText::new(if row.is_directory {
                     "Folder"
                 } else {
