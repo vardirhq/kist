@@ -1,0 +1,20 @@
+[workspace]
+members = [
+  "crates/kist-core",
+  "crates/kist-app",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/vardirhq/kist"
+rust-version = "1.85"
+
+[workspace.dependencies]
+anyhow = "1.0"
+eframe = "0.32"
+egui = "0.32"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "2.0"
