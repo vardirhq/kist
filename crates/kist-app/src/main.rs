@@ -118,7 +118,7 @@ impl KistApp {
                     let available = ui.available_width().min(700.0);
                     egui::Frame::new()
                         .fill(PANEL)
-                        .stroke(egui::Stroke::new(1.0, BORDER))
+                        .stroke(egui::Stroke::new(1.0_f32, BORDER))
                         .corner_radius(16.0)
                         .inner_margin(egui::Margin::same(38))
                         .show(ui, |ui| {
@@ -454,9 +454,9 @@ fn configure_style(ctx: &egui::Context) {
     visuals.faint_bg_color = PANEL_2;
     visuals.widgets.inactive.bg_fill = PANEL_2;
     visuals.widgets.inactive.weak_bg_fill = PANEL_2;
-    visuals.widgets.inactive.bg_stroke = egui::Stroke::new(1.0, BORDER);
+    visuals.widgets.inactive.bg_stroke = egui::Stroke::new(1.0_f32, BORDER);
     visuals.widgets.hovered.bg_fill = egui::Color32::from_rgb(38, 43, 50);
-    visuals.widgets.hovered.bg_stroke = egui::Stroke::new(1.0, egui::Color32::from_rgb(67, 74, 84));
+    visuals.widgets.hovered.bg_stroke = egui::Stroke::new(1.0_f32, egui::Color32::from_rgb(67, 74, 84));
     visuals.widgets.active.bg_fill = egui::Color32::from_rgb(43, 48, 56);
     visuals.selection.bg_fill = egui::Color32::from_rgb(92, 72, 34);
     visuals.override_text_color = Some(TEXT);
