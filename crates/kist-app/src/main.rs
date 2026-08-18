@@ -1,6 +1,9 @@
 use eframe::egui;
-use kist_core::{open_archive, ArchiveDocument, ArchiveEntry};
-use std::{collections::BTreeMap, path::{Path, PathBuf}};
+use kist_core::{ArchiveDocument, ArchiveEntry, open_archive};
+use std::{
+    collections::BTreeMap,
+    path::{Path, PathBuf},
+};
 
 const BG: egui::Color32 = egui::Color32::from_rgb(18, 20, 24);
 const PANEL: egui::Color32 = egui::Color32::from_rgb(24, 27, 32);
@@ -61,7 +64,11 @@ impl KistApp {
 
     fn show_top_bar(&mut self, ctx: &egui::Context) {
         egui::TopBottomPanel::top("top_bar")
-            .frame(egui::Frame::new().fill(PANEL).inner_margin(egui::Margin::symmetric(18, 12)))
+            .frame(
+                egui::Frame::new()
+                    .fill(PANEL)
+                    .inner_margin(egui::Margin::symmetric(18, 12)),
+            )
             .show(ctx, |ui| {
                 ui.horizontal(|ui| {
                     let mark = egui::RichText::new("K").strong().size(18.0).color(BG);
@@ -69,7 +76,9 @@ impl KistApp {
                         .fill(ACCENT)
                         .corner_radius(7.0)
                         .inner_margin(egui::Margin::symmetric(8, 4))
-                        .show(ui, |ui| { ui.label(mark); });
+                        .show(ui, |ui| {
+                            ui.label(mark);
+                        });
                     ui.label(egui::RichText::new("Kist").strong().size(17.0).color(TEXT));
                     ui.add_space(14.0);
                     ui.separator();
@@ -85,7 +94,11 @@ impl KistApp {
                     }
 
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                        ui.label(egui::RichText::new("Rust archive utility").color(MUTED).small());
+                        ui.label(
+                            egui::RichText::new("Rust archive utility")
+                                .color(MUTED)
+                                .small(),
+                        );
                     });
                 });
             });
@@ -130,30 +143,58 @@ impl KistApp {
     }
 
     fn show_archive(&mut self, ctx: &egui::Context) {
-        let Some(document) = self.document.as_ref() else { return };
+        let Some(document) = self.document.as_ref() else {
+            return;
+        };
         let summary = document.summary.clone();
-        let archive_name = summary.path.file_name().and_then(|name| name.to_str()).unwrap_or("Archive").to_owned();
+        let archive_name = summary
+            .path
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or("Archive")
+            .to_owned();
         let rows = visible_rows(&document.entries, &self.current_path);
 
         egui::SidePanel::left("archive_sidebar")
             .exact_width(220.0)
-            .frame(egui::Frame::new().fill(PANEL).inner_margin(egui::Margin::same(18)))
+            .frame(
+                egui::Frame::new()
+                    .fill(PANEL)
+                    .inner_margin(egui::Margin::same(18)),
+            )
             .show(ctx, |ui| {
                 ui.add_space(6.0);
                 ui.label(egui::RichText::new("ARCHIVE").small().strong().color(MUTED));
                 ui.add_space(8.0);
-                ui.label(egui::RichText::new(&archive_name).size(16.0).strong().color(TEXT));
-                ui.label(egui::RichText::new(summary.format.label()).color(ACCENT).small());
+                ui.label(
+                    egui::RichText::new(&archive_name)
+                        .size(16.0)
+                        .strong()
+                        .color(TEXT),
+                );
+                ui.label(
+                    egui::RichText::new(summary.format.label())
+                        .color(ACCENT)
+                        .small(),
+                );
                 ui.add_space(24.0);
                 stat(ui, "Files", summary.entries.to_string());
                 stat(ui, "Unpacked", format_bytes(summary.original_size));
                 stat(ui, "Archive size", format_bytes(summary.compressed_size));
-                stat(ui, "Space saved", format!("{:.1}%", summary.savings_percent().max(0.0)));
+                stat(
+                    ui,
+                    "Space saved",
+                    format!("{:.1}%", summary.savings_percent().max(0.0)),
+                );
                 ui.add_space(18.0);
                 ui.separator();
                 ui.add_space(14.0);
                 ui.label(egui::RichText::new("Path").small().color(MUTED));
-                ui.label(egui::RichText::new(summary.path.display().to_string()).small().color(TEXT));
+                ui.label(
+                    egui::RichText::new(summary.path.display().to_string())
+                        .small()
+                        .color(TEXT),
+                );
             });
 
         egui::CentralPanel::default()
@@ -226,48 +267,90 @@ fn stat(ui: &mut egui::Ui, label: &str, value: String) {
 }
 
 fn show_breadcrumbs(ui: &mut egui::Ui, current_path: &mut String) {
-    egui::Frame::new().fill(PANEL).inner_margin(egui::Margin::symmetric(20, 10)).show(ui, |ui| {
-        ui.horizontal(|ui| {
-            if ui.selectable_label(current_path.is_empty(), "Archive").clicked() {
-                current_path.clear();
-            }
-
-            let segments: Vec<String> = current_path.split('/').filter(|segment| !segment.is_empty()).map(str::to_owned).collect();
-            let mut built = String::new();
-            for segment in segments {
-                ui.label(egui::RichText::new("/").color(MUTED));
-                if !built.is_empty() { built.push('/'); }
-                built.push_str(&segment);
-                let target = built.clone();
-                if ui.selectable_label(false, &segment).clicked() {
-                    *current_path = target;
+    egui::Frame::new()
+        .fill(PANEL)
+        .inner_margin(egui::Margin::symmetric(20, 10))
+        .show(ui, |ui| {
+            ui.horizontal(|ui| {
+                if ui
+                    .selectable_label(current_path.is_empty(), "Archive")
+                    .clicked()
+                {
+                    current_path.clear();
                 }
-            }
+
+                let segments: Vec<String> = current_path
+                    .split('/')
+                    .filter(|segment| !segment.is_empty())
+                    .map(str::to_owned)
+                    .collect();
+                let mut built = String::new();
+                for segment in segments {
+                    ui.label(egui::RichText::new("/").color(MUTED));
+                    if !built.is_empty() {
+                        built.push('/');
+                    }
+                    built.push_str(&segment);
+                    let target = built.clone();
+                    if ui.selectable_label(false, &segment).clicked() {
+                        *current_path = target;
+                    }
+                }
+            });
         });
-    });
 }
 
 fn table_header(ui: &mut egui::Ui) {
-    egui::Frame::new().fill(BG).inner_margin(egui::Margin::symmetric(20, 10)).show(ui, |ui| {
-        ui.columns(4, |columns| {
-            columns[0].label(egui::RichText::new("Name").small().strong().color(MUTED));
-            columns[1].label(egui::RichText::new("Type").small().strong().color(MUTED));
-            columns[2].label(egui::RichText::new("Size").small().strong().color(MUTED));
-            columns[3].label(egui::RichText::new("Packed").small().strong().color(MUTED));
+    egui::Frame::new()
+        .fill(BG)
+        .inner_margin(egui::Margin::symmetric(20, 10))
+        .show(ui, |ui| {
+            ui.columns(4, |columns| {
+                columns[0].label(egui::RichText::new("Name").small().strong().color(MUTED));
+                columns[1].label(egui::RichText::new("Type").small().strong().color(MUTED));
+                columns[2].label(egui::RichText::new("Size").small().strong().color(MUTED));
+                columns[3].label(egui::RichText::new("Packed").small().strong().color(MUTED));
+            });
         });
-    });
 }
 
 fn row_ui(ui: &mut egui::Ui, row: &BrowserRow) -> egui::Response {
-    let label = if row.is_directory { format!("▸  {}", row.name) } else { format!("   {}", row.name) };
+    let label = if row.is_directory {
+        format!("▸  {}", row.name)
+    } else {
+        format!("   {}", row.name)
+    };
     let response = egui::Frame::new()
         .inner_margin(egui::Margin::symmetric(20, 9))
         .show(ui, |ui| {
             ui.columns(4, |columns| {
                 columns[0].label(egui::RichText::new(label).color(TEXT));
-                columns[1].label(egui::RichText::new(if row.is_directory { "Folder" } else { file_type(&row.name) }).color(MUTED));
-                columns[2].label(egui::RichText::new(if row.is_directory { "—".to_owned() } else { format_bytes(row.size) }).color(MUTED));
-                columns[3].label(egui::RichText::new(if row.is_directory { "—".to_owned() } else { row.compressed_size.map(format_bytes).unwrap_or_else(|| "—".to_owned()) }).color(MUTED));
+                columns[1].label(
+                    egui::RichText::new(if row.is_directory {
+                        "Folder"
+                    } else {
+                        file_type(&row.name)
+                    })
+                    .color(MUTED),
+                );
+                columns[2].label(
+                    egui::RichText::new(if row.is_directory {
+                        "—".to_owned()
+                    } else {
+                        format_bytes(row.size)
+                    })
+                    .color(MUTED),
+                );
+                columns[3].label(
+                    egui::RichText::new(if row.is_directory {
+                        "—".to_owned()
+                    } else {
+                        row.compressed_size
+                            .map(format_bytes)
+                            .unwrap_or_else(|| "—".to_owned())
+                    })
+                    .color(MUTED),
+                );
             });
         })
         .response
@@ -277,19 +360,33 @@ fn row_ui(ui: &mut egui::Ui, row: &BrowserRow) -> egui::Response {
 }
 
 fn visible_rows(entries: &[ArchiveEntry], current_path: &str) -> Vec<BrowserRow> {
-    let prefix = if current_path.is_empty() { String::new() } else { format!("{}/", current_path.trim_end_matches('/')) };
+    let prefix = if current_path.is_empty() {
+        String::new()
+    } else {
+        format!("{}/", current_path.trim_end_matches('/'))
+    };
     let mut rows: BTreeMap<String, BrowserRow> = BTreeMap::new();
 
     for entry in entries {
         let full = normalize_path(&entry.path);
-        let Some(rest) = full.strip_prefix(&prefix) else { continue };
-        if rest.is_empty() { continue; }
+        let Some(rest) = full.strip_prefix(&prefix) else {
+            continue;
+        };
+        if rest.is_empty() {
+            continue;
+        }
 
         let mut parts = rest.split('/').filter(|part| !part.is_empty());
-        let Some(first) = parts.next() else { continue };
+        let Some(first) = parts.next() else {
+            continue;
+        };
         let nested = parts.next().is_some();
         let is_directory = nested || entry.is_directory;
-        let path = if current_path.is_empty() { first.to_owned() } else { format!("{current_path}/{first}") };
+        let path = if current_path.is_empty() {
+            first.to_owned()
+        } else {
+            format!("{current_path}/{first}")
+        };
 
         rows.entry(first.to_owned())
             .and_modify(|row| {
@@ -302,22 +399,36 @@ fn visible_rows(entries: &[ArchiveEntry], current_path: &str) -> Vec<BrowserRow>
                 name: first.to_owned(),
                 path,
                 size: if is_directory { 0 } else { entry.size },
-                compressed_size: if is_directory { None } else { entry.compressed_size },
+                compressed_size: if is_directory {
+                    None
+                } else {
+                    entry.compressed_size
+                },
                 is_directory,
             });
     }
 
     let mut rows: Vec<_> = rows.into_values().collect();
-    rows.sort_by(|a, b| b.is_directory.cmp(&a.is_directory).then_with(|| a.name.to_lowercase().cmp(&b.name.to_lowercase())));
+    rows.sort_by(|a, b| {
+        b.is_directory
+            .cmp(&a.is_directory)
+            .then_with(|| a.name.to_lowercase().cmp(&b.name.to_lowercase()))
+    });
     rows
 }
 
 fn normalize_path(path: &Path) -> String {
-    path.to_string_lossy().replace('\\', "/").trim_matches('/').to_owned()
+    path.to_string_lossy()
+        .replace('\\', "/")
+        .trim_matches('/')
+        .to_owned()
 }
 
 fn file_type(name: &str) -> &str {
-    Path::new(name).extension().and_then(|ext| ext.to_str()).unwrap_or("File")
+    Path::new(name)
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or("File")
 }
 
 fn format_bytes(bytes: u64) -> String {
@@ -328,7 +439,11 @@ fn format_bytes(bytes: u64) -> String {
         value /= 1024.0;
         unit += 1;
     }
-    if unit == 0 { format!("{} {}", bytes, UNITS[unit]) } else { format!("{value:.1} {}", UNITS[unit]) }
+    if unit == 0 {
+        format!("{} {}", bytes, UNITS[unit])
+    } else {
+        format!("{value:.1} {}", UNITS[unit])
+    }
 }
 
 fn configure_style(ctx: &egui::Context) {
@@ -362,5 +477,9 @@ fn main() -> eframe::Result {
         ..Default::default()
     };
 
-    eframe::run_native("Kist", options, Box::new(|cc| Ok(Box::new(KistApp::new(cc)))))
+    eframe::run_native(
+        "Kist",
+        options,
+        Box::new(|cc| Ok(Box::new(KistApp::new(cc)))),
+    )
 }
